@@ -4,11 +4,16 @@ import { Redirect, useParams } from 'react-router-dom';
 import ThoughtList from '../components/ThoughtList';
 import FriendList from '../components/FriendList';
 
-import { useQuery } from '@apollo/react-hooks';
+import { ADD_FRIEND } from '../utils/mutations';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import { QUERY_USER, QUERY_ME } from '../utils/queries';
 import Auth from '../utils/auth';
 
+import ThoughtForm from '../components/ThoughtForm';
+
 const Profile = (props) => {
+	const [addFriend] = useMutation(ADD_FRIEND);
+
 	const { username: userParam } = useParams();
 
 	const { loading, data } = useQuery(userParam ? QUERY_USER : QUERY_ME, {
@@ -35,6 +40,16 @@ const Profile = (props) => {
 		);
 	}
 
+	const handleClick = async () => {
+		try {
+			await addFriend({
+				variables: { id: user._id },
+			});
+		} catch (e) {
+			console.error(e);
+		}
+	};
+
 	return (
 		<div>
 			<div className='flex-row mb-3'>
@@ -45,6 +60,14 @@ const Profile = (props) => {
 						: 'your'}{' '}
 					profile.
 				</h2>
+
+				{userParam && (
+					<button
+						className='btn ml-auto'
+						onClick={handleClick}>
+						Add Friend
+					</button>
+				)}
 			</div>
 
 			<div className='flex-row justify-space-between mb-3'>
@@ -62,6 +85,10 @@ const Profile = (props) => {
 						friends={user.friends}
 					/>
 				</div>
+			</div>
+
+			<div className='mb-3'>
+				{!userParam && <ThoughtForm />}
 			</div>
 		</div>
 	);
