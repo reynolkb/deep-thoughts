@@ -10,10 +10,11 @@ module.exports = {
 			req.body.token ||
 			req.query.token ||
 			req.headers.authorization;
-
+		// console.log(token);
 		// ["Bearer", "<tokenvalue>"]
 		if (req.headers.authorization) {
 			token = token.split(' ').pop().trim();
+			console.log(token);
 		}
 
 		if (!token) {
